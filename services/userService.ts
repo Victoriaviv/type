@@ -5,14 +5,21 @@ import { User } from '../entities/User';
 
 const JWT_SECRET = 'vicky'; // you can move this to env if needed
 
-export const registerUser = async (username: string, password: string): Promise<User> => {
+export const registerUser = async (username: string, password: string): Promise<string> => {
   const existingUser = await findUserByUsername(username);
   if (existingUser) {
     throw new Error('Username already exists');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  return await createUser({ username, password: hashedPassword });
+  const newUser = await createUser({ username, password: hashedPassword });
+
+  // Generate token right after registration
+  const token = jwt.sign({ id: newUser.id, username: newUser.username }, JWT_SECRET, {
+    expiresIn: '2h',
+  });
+
+  return token;
 };
 
 export const loginUser = async (username: string, password: string): Promise<string> => {

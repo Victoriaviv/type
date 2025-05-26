@@ -12,7 +12,7 @@ import { Response } from 'express';
 
 const router = express.Router();
 
-// POST /api/posts
+
 router.post('/posts', authMiddleware, async (req, res) => {
   const { title, body } = req.body;
   const user = (req as AuthRequest).user;
@@ -26,7 +26,6 @@ router.post('/posts', authMiddleware, async (req, res) => {
 });
 
 
-// GET /api/posts
 router.get('/posts', async (_req, res: Response) => {
   try {
     const posts = await fetchAllPosts();
@@ -36,7 +35,6 @@ router.get('/posts', async (_req, res: Response) => {
   }
 });
 
-// GET /api/posts/:id
 router.get('/posts/:id', async (req, res: Response) => {
   try {
     const post = await fetchPostById(parseInt(req.params.id));
@@ -46,7 +44,6 @@ router.get('/posts/:id', async (req, res: Response) => {
   }
 });
 
-// PUT /api/posts/:id
 router.put('/posts/:id', authMiddleware, async (req, res: Response) => {
   const { title, body } = req.body;
   const user = (req as AuthRequest).user;
@@ -59,7 +56,6 @@ router.put('/posts/:id', authMiddleware, async (req, res: Response) => {
   }
 });
 
-// DELETE /api/posts/:id
 router.delete('/posts/:id', authMiddleware, async (req, res: Response) => {
   const user = (req as AuthRequest).user;
 
@@ -70,5 +66,17 @@ router.delete('/posts/:id', authMiddleware, async (req, res: Response) => {
     res.status(400).json({ error: err.message });
   }
 });
+router.put('/posts/:id', authMiddleware, async (req, res: Response) => {
+  const { title, body } = req.body;
+  const user = (req as AuthRequest).user;
+
+  try {
+    const post = await editPost(parseInt(req.params.id), user.id, title, body);
+    res.status(200).json(post);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 
 export default router;

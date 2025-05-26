@@ -9,12 +9,13 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const user = await registerUser(username, password);
-    res.status(201).json({ message: 'User created', user: { id: user.id, username: user.username } });
+    const token = await registerUser(username, password);
+    res.status(201).json({ message: 'User registered', token });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 });
+
 
 // @route   POST /api/login
 router.post('/login', async (req, res) => {
