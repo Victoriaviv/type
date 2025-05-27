@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { User } from '../entities/User';
 import { Post } from '../entities/Post';
+import { PasswordResetRequest } from '../entities/PasswordResetRequest';
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ export const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false, // Required for Supabase
   },
-  entities: [User, Post],
+  entities: [User, Post, PasswordResetRequest],
   migrations: ['src/migrations/**/*.ts'],
   subscribers: ['src/subscribers/**/*.ts'],
 });

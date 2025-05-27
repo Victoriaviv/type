@@ -1,12 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { PasswordResetRequest } from './PasswordResetRequest';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  username!: string;
+  @Column({ nullable: true }) // 👈 TEMPORARY
+email?: string;
 
   @Column()
   password!: string;
@@ -14,6 +15,6 @@ export class User {
   @CreateDateColumn()
   createdAt!: Date;
 
-  @UpdateDateColumn()
-  updatedAt!: Date;
+  @OneToMany(() => PasswordResetRequest, resetRequest => resetRequest.user)
+  resetRequests!: PasswordResetRequest[];
 }

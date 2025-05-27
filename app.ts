@@ -3,6 +3,9 @@ import { initializeDatabase } from './config/database';
 import userRoutes from './routes/users';
 import postRoutes from './routes/posts';
 import "reflect-metadata";
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 
 const app = express();
