@@ -1,9 +1,9 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
-dotenv.config(); // load .env
+dotenv.config();
 
-export const sendResetEmail = async (to: string, otp: string) => {
+export const sendResetEmail = async (to: string, otp: string, subject: string) => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     throw new Error('EMAIL_USER or EMAIL_PASS is not defined');
   }
@@ -19,12 +19,14 @@ export const sendResetEmail = async (to: string, otp: string) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
-    subject: 'Your OTP for Password Reset',
+    subject,
     html: `
-      <p>You requested to reset your password.</p>
-      <p><strong>Your OTP is: ${otp}</strong></p>
-      <p>This OTP will expire in 10 minutes.</p>
-      <p>If you didn’t request this, please ignore this email.</p>
+      <div style="font-family: sans-serif; line-height: 1.5;">
+        <p>You requested to reset your password.</p>
+        <p><strong>Your OTP is: ${otp}</strong></p>
+        <p>This OTP will expire in 10 minutes.</p>
+        <p>If you didn’t request this, please ignore this email.</p>
+      </div>
     `,
   };
 

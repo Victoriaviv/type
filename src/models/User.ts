@@ -6,7 +6,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: true }) // 👈 TEMPORARY
+  @Column({ nullable: true })
 email?: string;
 
   @Column()

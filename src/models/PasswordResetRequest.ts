@@ -6,9 +6,9 @@ export class PasswordResetRequest {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => User, user => user.resetRequests)
+  @ManyToOne(() => User, user => user.resetRequests, { eager: true })
   user!: User;
-
+  
   @Column()
   tokenHash!: string;
 

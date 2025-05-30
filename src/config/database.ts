@@ -1,18 +1,20 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
-import { User } from '../entities/User';
-import { Post } from '../entities/Post';
-import { PasswordResetRequest } from '../entities/PasswordResetRequest';
+import { User } from '../models/User';
+import { Post } from '../models/Post';
+import { PasswordResetRequest } from '../models/PasswordResetRequest';
 
 dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  url: process.env.DATABASE_URL,
-  synchronize: process.env.NODE_ENV !== 'production',
-  logging: process.env.NODE_ENV !== 'production',
+  host: process.env.DB_HOST,
+port: parseInt(process.env.DB_PORT || '6543'),
+username: process.env.DB_USER,
+password: process.env.DB_PASSWORD,
+database: process.env.DB_NAME,
   ssl: {
-    rejectUnauthorized: false, // Required for Supabase
+    rejectUnauthorized: false, 
   },
   entities: [User, Post, PasswordResetRequest],
   migrations: ['src/migrations/**/*.ts'],

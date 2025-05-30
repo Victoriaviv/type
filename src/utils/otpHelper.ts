@@ -3,9 +3,8 @@ export const generateOtp = (): string => {
 };
 
 
-// ------------------- utils/email.ts -------------------
 export const sendResetEmail = async (email: string, otp: string): Promise<void> => {
   console.log(`Sending OTP ${otp} to ${email}`);
-  // integrate actual email logic
+ 
 };
 

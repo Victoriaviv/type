@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only app.ts"
+    "dev": "ts-node-dev src/app.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +20,8 @@
     "nodemailer": "^7.0.3",
     "pg": "^8.16.0",
     "reflect-metadata": "^0.2.2",
-    "typeorm": "^0.3.24"
+    "typeorm": "^0.3.24",
+    "zod": "^3.25.32"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
