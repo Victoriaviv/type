@@ -29,6 +29,10 @@ export const sendResetEmail = async (to: string, otp: string, subject: string) =
       </div>
     `,
   };
-
-  await transporter.sendMail(mailOptions);
+  console.log(`Preparing to send email to ${to} with OTP ${otp}`);
+  await transporter.sendMail(mailOptions).then(info => {
+    console.log('Email sent:', info.response);
+  }).catch(error => {
+    console.error('Error sending email:', error);
+  });
 };

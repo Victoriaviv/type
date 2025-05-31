@@ -7,14 +7,17 @@ import { PasswordResetRequest } from '../models/PasswordResetRequest';
 dotenv.config();
 
 export const AppDataSource = new DataSource({
-  type: 'postgres',
-  host: process.env.DB_HOST,
-port: parseInt(process.env.DB_PORT || '6543'),
-username: process.env.DB_USER,
-password: process.env.DB_PASSWORD,
-database: process.env.DB_NAME,
+  synchronize:true,
+//   type: 'postgres',
+//   host: process.env.DB_HOST,
+// port: parseInt(process.env.DB_PORT || '6543'),
+// username: process.env.DB_USER,
+// password: process.env.DB_PASSWORD,
+// database: process.env.DB_NAME,
+type: "postgres", // Define database type
+url: process.env.POSTGRES_URL, // Load database URL from environment variables
   ssl: {
-    rejectUnauthorized: false, 
+    rejectUnauthorized:false, 
   },
   entities: [User, Post, PasswordResetRequest],
   migrations: ['src/migrations/**/*.ts'],

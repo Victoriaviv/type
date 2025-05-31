@@ -6,7 +6,7 @@ import {
   resetPassword,
   requestPasswordResetWithOtp,
   verifyOtpAndResetPassword,
-} from '../services/user.Service';
+} from '../services/auth.Service';
 
 export const registerUserController = async (req: Request, res: Response) => {
   const { username,email, password } = req.body;
@@ -51,9 +51,10 @@ export const resetPasswordController = async (req: Request, res: Response) => {
 
 export const requestResetOtpController = async (req: Request, res: Response) => {
   const { email } = req.body;
+  console.log('OTP request received for email:', email);
   try {
     await requestPasswordResetWithOtp(email, req.ip || '', req.headers['user-agent'] as string || '');
-    res.status(200).json({ message: 'If the email exists, an OTP has been sent.' });
+    res.status(200).json({ message: 'OTP sent' });
   } catch (err: any) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
