@@ -16,8 +16,8 @@ import {
     @Column()
     title!: string;
   
-    @Column()
-    body!: string;
+    @Column({ nullable: true })
+    body?: string;
   
     @ManyToOne(() => User, (user) => user.id)
     author!: User;

@@ -1,11 +1,22 @@
 // controllers/userController.ts
-import { Request, Response } from 'express';
+import { Request, Response,NextFunction  } from 'express';
 import {
   getAllUsers,
   getUserById,
   updateUser,
   deleteUser
 } from '../services/user.Service';
+
+interface AuthRequest extends Request {
+  user?: { id: number; role: string };
+}
+
+export function isAdmin(req: AuthRequest, res: Response, next: NextFunction) {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+}
 
 export const getAllUsersController = async (_req: Request, res: Response) => {
   try {

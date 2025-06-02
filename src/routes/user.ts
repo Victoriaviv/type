@@ -1,4 +1,3 @@
-// routes/user.route.ts
 import { Router } from 'express';
 import {
   getAllUsersController,
@@ -7,7 +6,13 @@ import {
   deleteUserController,
 } from '../controllers/user.controller';
 
+import { authMiddleware } from '../middlewares/AuthRequest';  // your auth middleware
+import { isAdmin } from '../middlewares/AuthRequest';        // admin check middleware
+
 const router = Router();
+
+// Apply auth and admin check before all user routes
+router.use(authMiddleware, isAdmin);
 
 router.get('/', getAllUsersController);
 router.get('/:id', getUserByIdController);

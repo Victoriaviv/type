@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const sendResetEmail = async (to: string, otp: string, subject: string) => {
+  console.log(`📩 sendResetEmail called with ${to}, ${otp}`); // ✅ Add this line
+
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     throw new Error('EMAIL_USER or EMAIL_PASS is not defined');
   }
@@ -29,10 +31,10 @@ export const sendResetEmail = async (to: string, otp: string, subject: string) =
       </div>
     `,
   };
-  console.log(`Preparing to send email to ${to} with OTP ${otp}`);
+
   await transporter.sendMail(mailOptions).then(info => {
-    console.log('Email sent:', info.response);
+    console.log('✅ Email sent:', info.response);
   }).catch(error => {
-    console.error('Error sending email:', error);
+    console.error('❌ Error sending email:', error);
   });
 };

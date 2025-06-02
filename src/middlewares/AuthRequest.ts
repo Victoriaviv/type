@@ -1,30 +1,36 @@
-import { RequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/User';
-import { Request } from 'express';
-
 
 export interface AuthRequest extends Request {
-  user: User;
+  user?: { id: number; role: string };
 }
 
-export const authMiddleware: RequestHandler = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-console.log("authHeader",authHeader)
+export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+  const authReq = req as AuthRequest;
+  const authHeader = authReq.headers.authorization;
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     res.status(401).json({ error: 'No token provided' });
     return;
   }
 
   const token = authHeader.split(' ')[1];
-  const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number };
-  console.log("decoded",decoded)
+
   try {
-   
-    (req as any).user = { id: decoded.id } as User;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number; role: string };
+    authReq.user = { id: decoded.id, role: decoded.role };
     next();
   } catch (err) {
     res.status(401).json({ error: 'Invalid token' });
+  }
+};
+export const isAdmin = (req: Request, res: Response, next: NextFunction): void => {
+  const authReq = req as AuthRequest;
+
+  if (!authReq.user || authReq.user.role !== 'admin') {
+    res.status(403).json({ message: 'Admin access required' });
     return;
   }
+
+  next();
 };

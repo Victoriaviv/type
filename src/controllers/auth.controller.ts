@@ -9,10 +9,10 @@ import {
 } from '../services/auth.Service';
 
 export const registerUserController = async (req: Request, res: Response) => {
-  const { username,email, password } = req.body;
+  const { username, email, password, role } = req.body;
   try {
-    const token = await registerUser(username,email, password);
-    res.status(201).json({ message: 'User registered', token, });
+    const { token, user } = await registerUser(username, email, password, role);
+    res.status(201).json({ message: 'User registered', token, user });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -62,6 +62,7 @@ export const requestResetOtpController = async (req: Request, res: Response) => 
 
 export const verifyOtpController = async (req: Request, res: Response) => {
   const { email, otp, newPassword } = req.body;
+  
   try {
     await verifyOtpAndResetPassword(email, otp, newPassword);
     res.status(200).json({ message: 'OTP verified and password reset successful' });

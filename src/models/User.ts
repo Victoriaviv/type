@@ -7,14 +7,16 @@ export class User {
   id!: number;
 
   @Column({ nullable: true })
-email?: string;
+  email?: string;
 
-@Column()
-username!: string;
-
+  @Column({ nullable: true })
+  username?: string;
 
   @Column()
   password!: string;
+
+  @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
+  role!: 'user' | 'admin';
 
   @CreateDateColumn()
   createdAt!: Date;

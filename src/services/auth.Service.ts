@@ -1,6 +1,6 @@
 // services/auth.service.ts
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt,{ SignOptions }from 'jsonwebtoken';
 import crypto from 'crypto';
 import { MoreThan, IsNull } from 'typeorm';
 import { AppDataSource } from '../config/database';
@@ -14,28 +14,84 @@ const resetRepo = AppDataSource.getRepository(PasswordResetRequest);
 const JWT_EXPIRES_IN = '1h';
 
 const generateResetToken = (): string => crypto.randomBytes(32).toString('hex');
-
-export const registerUser = async (username: string, email: string, password: string): Promise<string> => {
+type AllowedRole = 'user' | 'admin';
+export const registerUser = async (
+  username: string,
+  email: string,
+  password: string,
+  role: 'user' | 'admin' = 'user'
+): Promise<{ token: string; user: { id: number; username: string; email: string; role: string } }> => {
   const existingUser = await userRepo.findOne({ where: { email } });
   if (existingUser) throw new Error('Email is already registered');
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const user = userRepo.create({ username, email, password: hashedPassword });
-  await userRepo.save(user);
 
-  const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET as string, { expiresIn: JWT_EXPIRES_IN });
-  return token;
-};
+  const newUser = userRepo.create({
+    username,
+    email,
+    password: hashedPassword,
+    role,
+  });
 
-export const loginUser = async (email: string, password: string): Promise<string> => {
-  const user = await userRepo.findOne({ where: { email } });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    throw new Error('Invalid credentials');
+  const savedUser = await userRepo.save(newUser);
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined');
   }
 
-  return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET as string, { expiresIn: JWT_EXPIRES_IN });
+  const payload = {
+    id: savedUser.id,
+    email: savedUser.email as string,
+    role: savedUser.role,
+  };
+
+  const secret = process.env.JWT_SECRET as string;
+  const options: SignOptions = {
+    expiresIn: (process.env.JWT_EXPIRES_IN || '1h') as jwt.SignOptions['expiresIn'],
+  };
+
+  const token = jwt.sign(payload, secret, options);
+
+  return {
+    token,
+    user: {
+      id: savedUser.id,
+      username: savedUser.username ?? '',
+      email: savedUser.email as string,
+      role: savedUser.role,
+    },
+  };
 };
 
+ // adjust path to where your Prisma client is
+
+ export const loginUser = async (email: string, password: string): Promise<string> => {
+  // 1) Look up the user via TypeORM
+  const user = await userRepo.findOne({ where: { email } });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // 2) Compare plaintext password against the hashed one
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error('Invalid password');
+  }
+
+  // 3) Build payload and sign a JWT
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined');
+  }
+  const payload = {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  };
+  const secret = process.env.JWT_SECRET as string;
+  const options: SignOptions = { expiresIn: JWT_EXPIRES_IN };
+
+  const token = jwt.sign(payload, secret, options);
+  return token;
+};
 export const requestPasswordReset = async (email: string, ip: string, agent: string): Promise<void> => {
   const user = await userRepo.findOne({ where: { email } });
   if (!user) return;
@@ -70,6 +126,7 @@ export const resetPassword = async (token: string, newPassword: string): Promise
 };
 
 export const requestPasswordResetWithOtp = async (email: string, ip: string, agent: string) => {
+  
   const user = await userRepo.findOne({ where: { email } });
   if (!user?.email) return;
 
@@ -83,7 +140,8 @@ export const requestPasswordResetWithOtp = async (email: string, ip: string, age
   });
 
   await resetRepo.save(resetRequest);
-  await sendResetEmail('victoriadufatanye99@gmail.com', '111111', 'Test OTP');
+  console.log(`👉 About to send OTP ${otp} to ${user.email}`);
+  
 };
 
 export const verifyOtpAndResetPassword = async (
