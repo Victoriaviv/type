@@ -1,4 +1,4 @@
-import express from 'express';
+import express, {Router} from 'express';
 import { authMiddleware } from '../middlewares/AuthRequest';
 
 import {
@@ -10,7 +10,8 @@ import {
 } from '../controllers/post.controller';
 import { emailSchema } from '../schemas/common.schema';
 import { isAdmin } from '../middlewares/AuthRequest'; 
-const router = express.Router();
+
+const router: Router = express.Router();
 
 
 

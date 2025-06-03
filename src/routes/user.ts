@@ -18,5 +18,8 @@ router.get('/', getAllUsersController);
 router.get('/:id', getUserByIdController);
 router.put('/:id', updateUserController);
 router.delete('/:id', deleteUserController);
+router.get('/users', (req, res) => {
+  res.json({ message: 'List of users' });
+});
 
 export default router;

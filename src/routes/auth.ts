@@ -9,6 +9,7 @@ import {
 } from '../controllers/auth.controller';
 import {validate} from '../middlewares/validation.middleware';
 import {loginSchema, signupSchema } from '../schemas/auth.schema';
+import { emailSchema, passwordSchema } from '../schemas/common.schema';
 
 const router = express.Router();
 
