@@ -25,6 +25,8 @@ export const fetchPostById = async (id: number) => {
   return post;
 };
 
+
+
 export const editPost = async (postId: number, userId: number, title: string, body: string) => {
   const postRepo = AppDataSource.getRepository(Post);
   const post = await postRepo.findOne({ where: { id: postId }, relations: ['author'] });
