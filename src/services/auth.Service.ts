@@ -64,7 +64,7 @@ export const registerUser = async (
 
  // adjust path to where your Prisma client is
 
- export const loginUser = async (email: string, password: string): Promise<string> => {
+ export const loginUser = async (email: string, password: string): Promise<{ token: string; user: { id: number; email: string; role: string } }> => {
   // 1) Look up the user via TypeORM
   const user = await userRepo.findOne({ where: { email } });
   if (!user) {
@@ -88,9 +88,13 @@ export const registerUser = async (
   };
   const secret = process.env.JWT_SECRET as string;
   const options: SignOptions = { expiresIn: JWT_EXPIRES_IN };
-
   const token = jwt.sign(payload, secret, options);
-  return token;
+
+  // 4) Return both the token and the user details
+  return { token, user: { id: user.id, email: user.email, role: user.role } };
+
+
+
 };
 export const requestPasswordReset = async (email: string, ip: string, agent: string): Promise<void> => {
   const user = await userRepo.findOne({ where: { email } });
@@ -164,4 +168,13 @@ export const verifyOtpAndResetPassword = async (
 
   await userRepo.save(user);
   await resetRepo.save(resetRequest);
+};
+export const getUserById = async (id: number) => {
+  const user = await userRepo.findOne({
+    where: { id },
+    select: ['id', 'username', 'email', 'role'], // select only fields you want to expose
+  });
+
+  if (!user) throw new Error('User not found');
+  return user;
 };

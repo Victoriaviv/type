@@ -5,7 +5,7 @@ import { User } from '../models/User';
 const userRepo = AppDataSource.getRepository(User);
 
 export const getAllUsers = async () => {
-  return await userRepo.find({ select: ['id', 'username', 'email', 'createdAt'] });
+  return await userRepo.find({ select: ['id', 'username', 'email', 'role', 'createdAt'] });
 };
 
 export const getUserById = async (id: number) => {

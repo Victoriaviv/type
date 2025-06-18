@@ -1,25 +1,27 @@
 import { Router } from 'express';
 import {
   getAllUsersController,
+  getUserProfile,
   getUserByIdController,
   updateUserController,
   deleteUserController,
+ 
 } from '../controllers/user.controller';
 
-import { authMiddleware } from '../middlewares/AuthRequest';  // your auth middleware
-import { isAdmin } from '../middlewares/AuthRequest';        // admin check middleware
-
+import { authMiddleware } from '../middlewares/AuthRequest';
+import { isAdmin } from '../middlewares/AuthRequest'; 
 const router = Router();
 
-// Apply auth and admin check before all user routes
-router.use(authMiddleware, isAdmin);
+// User must be authenticated for all routes below
+router.use(authMiddleware);
 
-router.get('/', getAllUsersController);
-router.get('/:id', getUserByIdController);
-router.put('/:id', updateUserController);
-router.delete('/:id', deleteUserController);
-router.get('/users', (req, res) => {
-  res.json({ message: 'List of users' });
-});
+// Admin-only routes
+router.get('/users', isAdmin, getAllUsersController);
+router.get('/users/:id', isAdmin, getUserByIdController);
+router.put('/users/:id', isAdmin, updateUserController);
+router.delete('/users/:id', isAdmin, deleteUserController);
+
+// Profile route for logged-in user (no admin needed)
+router.get('/profile', getUserProfile);
 
 export default router;

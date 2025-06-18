@@ -21,10 +21,10 @@ export const registerUserController = async (req: Request, res: Response) => {
 export const loginUserController = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
-    const token = await loginUser(email, password);
-    res.status(200).json({ token });
+    const { token, user } = await loginUser(email, password);
+    res.status(200).json({ token, user });
   } catch (error: any) {
-    res.status(401).json({ error: error.message });
+    res.status(401).json({ message: error?.message });
   }
 };
 
@@ -51,7 +51,6 @@ export const resetPasswordController = async (req: Request, res: Response) => {
 
 export const requestResetOtpController = async (req: Request, res: Response) => {
   const { email } = req.body;
-  console.log('OTP request received for email:', email);
   try {
     await requestPasswordResetWithOtp(email, req.ip || '', req.headers['user-agent'] as string || '');
     res.status(200).json({ message: 'OTP sent' });
@@ -62,7 +61,6 @@ export const requestResetOtpController = async (req: Request, res: Response) => 
 
 export const verifyOtpController = async (req: Request, res: Response) => {
   const { email, otp, newPassword } = req.body;
-  
   try {
     await verifyOtpAndResetPassword(email, otp, newPassword);
     res.status(200).json({ message: 'OTP verified and password reset successful' });

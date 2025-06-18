@@ -15,26 +15,31 @@ import postRoutes from './routes/posts';
 dotenv.config();
 
 const app = express();
-
+app.use(cors({
+  origin: 'http://localhost:3000', // or your frontend origin
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
-app.use('/api', authRoutes);
-app.use('/api', postRoutes);
-app.use('/api',userRoutes);
+
 // app.use('/auth',authRoutes);
 // app.use('/users',userRoutes);
 // app.use('/posts',postRoutes);
 app.use(errorHandler);
 // const app = express();
-
+app.use('/uploads', express.static('uploads'));
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(express.static('public'));
-
+ 
+app.use('/api', authRoutes);
+app.use('/api', postRoutes);
+app.use('/api',userRoutes);
 // Mount API routes
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/posts', postRoutes);
+// app.use('/api/v1/auth', authRoutes);
+// app.use('/api/v1/users', userRoutes);
+// app.use('/api/v1/posts', postRoutes);
 // app.use('/api/v1', routes); // If routes/index.ts exports extra general routes
 
 // Swagger documentation

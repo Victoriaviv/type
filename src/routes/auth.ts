@@ -5,21 +5,16 @@ import {
   requestPasswordResetController,
   resetPasswordController,
   requestResetOtpController,
-  verifyOtpController
+  verifyOtpController,
 } from '../controllers/auth.controller';
-import {validate} from '../middlewares/validation.middleware';
-import {loginSchema, signupSchema } from '../schemas/auth.schema';
-import { emailSchema, passwordSchema } from '../schemas/common.schema';
 
 const router = express.Router();
 
-router.post('/register',validate (signupSchema),registerUserController);
-router.post('/login', validate(loginSchema),loginUserController);
-router.post('/forgot-password', requestPasswordResetController);
-router.post('/reset-password', resetPasswordController);
-router.post('/request-reset-otp', requestResetOtpController);
-router.post('/verify-otp', verifyOtpController);
-
-
+router.post('/register', registerUserController);
+router.post('/login', loginUserController);
+router.post('/password-reset/request', requestPasswordResetController);
+router.post('/password-reset/reset', resetPasswordController);
+router.post('/password-reset/request-otp', requestResetOtpController);
+router.post('/password-reset/verify-otp', verifyOtpController);
 
 export default router;

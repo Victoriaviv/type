@@ -5,11 +5,15 @@ import {
   getUserById,
   updateUser,
   deleteUser
+  
 } from '../services/user.Service';
+
+
 
 interface AuthRequest extends Request {
   user?: { id: number; role: string };
 }
+
 
 export function isAdmin(req: AuthRequest, res: Response, next: NextFunction) {
   if (!req.user || req.user.role !== 'admin') {
@@ -24,6 +28,20 @@ export const getAllUsersController = async (_req: Request, res: Response) => {
     res.status(200).json(users);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+};
+export const getUserProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as AuthRequest).user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+    const user = await getUserById(userId);
+    res.status(200).json(user);
+  } catch (error: any) {
+    res.status(500).json({ message: error?.message || 'Server Error' });
   }
 };
 
